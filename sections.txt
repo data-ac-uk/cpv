@@ -1,0 +1,62 @@
+A: materials
+AA: metal and alloy
+AB: non-metal
+B: form, shape, packaging and conditioning
+BA: form
+BB: shape
+BC: packaging and conditioning
+C: materials/products with special qualities and operation mode
+CA: materials/products with special qualities
+CB: mode of operation
+D: general, administration
+DA: general and administration attributes
+E: users/beneficiaries
+EA: users or beneficiaries
+F: designated use
+FA: educational use
+FB: security use
+FC: waste use
+FD: season use
+FE: postal use
+FF: cleaning use
+FG: other destination use
+G: scale and dimension
+GA: dimension and power indication
+GB: frequency
+GC: other indication
+H: residual attributes for food, drink and meal
+HA: attributes for food, drink and meal
+I: residual attributes for construction/works
+IA: attributes for construction/works
+J: residual attributes for computing, information technology or communication
+JA: attributes for computing, information technology or communication
+K: residual attributes for energy and water distribution
+KA: attributes for energy and water distribution
+L: residual medical and laboratory attributes
+LA: attributes for medical and laboratory
+M: residual attributes for transport
+MA: attributes for designated a type of vehicle
+MB: features of vehicle
+MD: attributes for special transport
+ME: attributes for transport special goods
+MF: with using a vehicle
+P: renting services
+PA: renting or hire services
+PB: crew, driver or operator services
+Q: residual attributes for advertising and legal advisory services
+QA: advertising services
+QB: legal advisory services
+R: residual attributes for research services
+RA: medical research
+RB: economic research services
+RC: technology research
+RD: research fields
+S: residual attributes for financial services
+SA: banking services
+SB: insurance services
+SC: pension services
+T: residual attributes for printing services
+TA: printing services
+U: residual attributes for retail trade services
+UA: retail trade services for food
+UB: retail trade services for non-food
