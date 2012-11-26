@@ -24,7 +24,7 @@ my $fh;
 
 $schemes->{CPV2008}->{name} = "CPV 2008";
 $schemes->{CPV2008}->{code} = "CPV2008";
-open( $fh, "data/sections.txt" ) || die;
+open( $fh, "sections.txt" ) || die;
 my $levl1 = "";
 while( my $line = readline( $fh ) )
 {
@@ -50,7 +50,7 @@ foreach my $scheme ( values %{$schemes} )
 	bless $scheme, "CPV::Scheme";
 }
 
-open( $fh, "-|:utf8", "xsltproc xml2table.xsl data/cpv_2008.xml" ) || die;
+open( $fh, "-|:utf8", "xsltproc xml2table.xsl cpv_2008.xml" ) || die;
 while( my $line = readline($fh) )
 {
 	chomp $line;
@@ -119,7 +119,7 @@ foreach my $code ( keys %$codes )
 	$codes->{$record->{parent}}->{children}->{$code} = $code;
 }
 
-open( $fh, "-|:utf8", "xsltproc xml2table.xsl data/code_cpv_suppl_2008.xml" ) || die;
+open( $fh, "-|:utf8", "xsltproc xml2table.xsl code_cpv_suppl_2008.xml" ) || die;
 while( my $line = readline($fh) )
 {
 	next if $line =~ m/^\s*$/;
@@ -176,7 +176,7 @@ open( $fh, ">:utf8", "output/lookup-en.txt" ) || die;
 foreach my $basecode ( keys %$codes )
 {
 	my $record = $codes->{$basecode};
-	print $fh ($record->{names}->{EN})."\t$basecode\t".(defined $record->{type}?$record->{type}:"")."\n";
+	print $fh "".($record->{names}->{EN})."\t$basecode\t".(defined $record->{type}?$record->{type}:"")."\n";
 }
 close $fh;
 
@@ -236,7 +236,7 @@ sub output
 {
 	my( $code, @data ) = @_;
 
-	my $tmpfile = "output/$code.tmp.ttl";
+	my $tmpfile = "../htdocs/$code.tmp.ttl";
 
 	my $fh;
 	open( $fh, ">:utf8", $tmpfile ) || die;
@@ -244,7 +244,9 @@ sub output
 	print $fh join( "\n", @data );
 	close $fh;
 
-	my $cmd = "rapper -q -i turtle $tmpfile | sort -u | rapper -q -i ntriples -I http://purl.org/cpv/2008/ - -o turtle > output/$code.ttl";
+	my $features = " -f 'xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"' -f 'xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"' -f 'xmlns:owl=\"http://www.w3.org/2002/07/owl#\"' ";
+
+	my $cmd = "rapper -q -i turtle $tmpfile | sort -u | rapper -q -i ntriples -I http://purl.org/cpv/2008/ $features - -o turtle > ../htdocs/$code.ttl";
 	`$cmd`;
 	unlink( $tmpfile );
 }
