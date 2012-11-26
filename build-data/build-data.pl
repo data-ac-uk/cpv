@@ -36,7 +36,7 @@ while( my $line = readline( $fh ) )
 
 	if( length( $code ) == 1 )
 	{
-		$levl1 = "Section A: $label";
+		$levl1 = "Section $code: $label";
 		$schemes->{$code}->{name} = "CPV 2008 Supplementary vocabulary: $levl1";
 		$schemes->{$code}->{code} = $code;
 	}
@@ -154,35 +154,40 @@ my @classes = qw/ Division Group Class Category Subcategory /;
 
 # Output Redirect map
 
-open( $fh, ">:utf8", "../htdocs/redirects.htaccess" ) || die;
-my $URL_Base_Path = "/";
+open( $fh, ">:utf8", "../htdocs/.htaccess" ) || die;
+print $fh "AddType text/turtle .ttl\n";
+print $fh "AddType application/rdf+xml .rdf\n";
 foreach my $class ( @classes )
 {
-	print $fh "Redirect $URL_Base_Path/$class $URL_Base_Path/schema.ttl\n";
+	print $fh "Redirect /$class /turtle/schema.ttl\n";
 }
 foreach my $basecode ( keys %$codes )
 {
 	my $record = $codes->{$basecode};
 	my $code = $record->{code};
-	print $fh "Redirect $URL_Base_Path/code-$basecode $URL_Base_Path/code-$basecode.ttl\n";
-	print $fh "Redirect $URL_Base_Path/code-$code $URL_Base_Path/code-$basecode.ttl\n";
+	print $fh "Redirect /code-$basecode /turtle/code-$basecode.ttl\n";
+	print $fh "Redirect /code-$code /turtle/code-$basecode.ttl\n";
 }
 foreach my $scheme_code ( keys %$schemes )
 {
-	print $fh "Redirect $URL_Base_Path/scheme-$scheme_code $URL_Base_Path/scheme-$scheme_code.ttl\n";
+	print $fh "Redirect /scheme-$scheme_code /turtle/scheme-$scheme_code.ttl\n";
 }
 close $fh;
 
 # Output URI lookup table (English)
 
-open( $fh, ">:utf8", "../htdocs/lookup-en.txt" ) || die;
+my %rows;
 foreach my $basecode ( keys %$codes )
 {
 	my $record = $codes->{$basecode};
-	print $fh "".($record->{names}->{EN})."\t$basecode\t".(defined $record->{type}?$record->{type}:"")."\n";
+	$rows{$record->{names}->{EN}} = "".($record->{names}->{EN})."\t$basecode\t".(defined $record->{type}?$record->{type}:"suppliemental code")."\n";
+}
+open( $fh, ">:utf8", "../htdocs/lookup-en.txt" ) || die;
+foreach my $name ( sort keys %rows )
+{
+	print $fh $rows{$name};
 }
 close $fh;
-
 
 
 
@@ -359,12 +364,11 @@ sub CPV::Code::toHTML
 	my @scheme_links = ();
 	foreach my $scheme ( sort @{$record->{scheme}} )
 	{
-		push @scheme_links, "<a href='scheme-$scheme.html'>".$schemes->{$scheme}->{name}."</a>";
+		$page->{content} .= "<div class='metadata'><strong>Scheme:</strong> <a href='scheme-$scheme.html'>".$schemes->{$scheme}->{name}."</a></div>";
 	}
-	$page->{content} .= "<div class='metadata'><strong>Scheme:</strong> ".join( ", ", @scheme_links )."</div>";
 	if( defined $record->{parent} || defined $record->{children} )
 	{
-		my $tree = "<strong>".$record->{basecode}." - ".$record->{names}->{EN}."</strong>";
+		my $tree = "<strong>".$record->{code}." - ".$record->{names}->{EN}."</strong>";
 		if( defined $record->{children} )
 		{
 			$tree.= "<ul>";

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>CPV2008 Linked Data</title>
+  <link rel="stylesheet" href="/resources/site.css">
+  <script src='/resources/jquery.min.js' ></script>
+ </head>
+ <body>
+  <div class='dataacuk_bar'>data.ac.uk</div>
+  <h1>CPV2008 Linked Data</h1>
+  <p>This site provides Linked Open Data for <a href='http://simap.europa.eu/codes-and-nomenclatures/codes-cpv/codes-cpv_en.htm'>CPV Codes (European Union Common Procurement Vocabulary)</a>. All the data on this site is derived from the XML files on the Simap site.</p>
+<p>These codes provide a rich vocabulary for describing goods and services, from 
+"<a href="code-03221410.html">Cabbages</a>" to "<a href="code-51214000.html">Installation services of parking meter equipment</a>".  This service has the goal of making this easier to use in Linked Open data.</p>
+<h2>Quick Search</h2>
+
+    <div class='ui-widget' style='margin:0.3em;text-align:center;clear:both;'>
+      <input id='cpv_input' type='text' style='text-align:left;width:90%;font-size:140%;padding:0.1em;border:solid 1px #000' />
+    </div>
+    <div id='helpstring' style='text-align:center;margin-top:0.3em;font-size:70%'>Enter 3 or more characters to begin search</div>
+</div>
+
+<div id="results">
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#cpv_input').keyup(function() {
+        search_cpv(this.value);
+    });
+
+    $('#cpv_input').focus();
+
+    search_cpv($('#cpv_input').val()); 
+});
+
+
+
+function search_cpv(text) {
+    if (text.length > 2) {
+        $('#helpstring').hide();
+        $.post('search.php', {'term': text}, update_results, 'html');
+    }
+    else if (text.length == 0) {
+        clear_results();
+    }
+
+    if (text.length < 3) {
+        $('#helpstring').show();
+    }
+}
+
+function update_results( data )
+{
+	$('#results').html( data );
+}
+
+
+function clear_results() {
+    $('#results').html('');
+}
+
+</script>
+
+
+
+<h2>Downloads</h2>
+<ul>
+<li><a href='turtle/CPV2008.ttl'>Main CPV 2008 scheme in RDF Turtle</a></li>
+<li><a href='tsv/CPV2008.tsv'>Main CPV 2008 codes in TSV</a></li>
+<li><a href='turtle/dump.ttl'>ALL data in RDF Turtle</a> (includes supplementary code schemes)</li>
+</ul>
+  <h2>RDF</h2>
+  <p>The schemes are described using <a href='http://www.w3.org/2004/02/skos/'>skos</a>. Individual URIs for codes and schemes resolve to shorter documents (as described below) and a big dump of everything is also available.</p>
+  <p>Namespace: <tt>http://purl.org/cpv/2008/</tt></p>
+
+  <h3>Individual Codes</h3>
+  <p><tt>http://purl.org/cpv/2008/code-<i>&lt;code&gt;></i></tt></p>
+  <p>The <i>code</i> can include the checksum or not. eg. 
+http://purl.org/cpv/2008/code-15555000-3 and http://purl.org/cpv/2008/code-15555000 are both valid but the metadata is associated with the non-checksum version, and a owl:sameAs links this to the URI including the checksum. Resolving the URI also gives the label in a number of european languages.</p>
+  <p>Information on codes is available as HTML and Turtle formats. The URI will redirect to the RDF Turtle file.</p>
+
+  <h3>Schemes</h3>
+
+  <p><tt>http://purl.org/cpv/2008/scheme-<i>&lt;scheme&gt;></i></tt></p>
+  <p>The main scheme is <a href='scheme-CPV2008.html'>CPV2008</a> but there are also a number of supplemental schemes which allow qualification of the codes in the main scheme. Some of these supplemental codes are intended for use with a value, such as size or weight, but that is beyond our scope currently.</p>
+  <p>Schemes are available as HTML, Turtle and TSV (Spreadsheet) formats. The URI will redirect to the RDF Turtle file.</p>
+<h2>Browse Codes</h2> 
+<ul>
+<li><a href='scheme-CPV2008.html'>CPV Codes 2008</a></li>
+</ul>
+<h3>Supplemental Code Schemes</h3>
+<ul>
+<li><a href='scheme-A.html'>A - materials</a></li>
+<li><a href='scheme-AA.html'>AA - metal and alloy</a></li>
+<li><a href='scheme-AB.html'>AB - non-metal</a></li>
+<li><a href='scheme-B.html'>B - form, shape, packaging and conditioning</a></li>
+<li><a href='scheme-BA.html'>BA - form</a></li>
+<li><a href='scheme-BB.html'>BB - shape</a></li>
+<li><a href='scheme-BC.html'>BC - packaging and conditioning</a></li>
+<li><a href='scheme-C.html'>C - materials/products with special qualities and operation mode</a></li>
+<li><a href='scheme-CA.html'>CA - materials/products with special qualities</a></li>
+<li><a href='scheme-CB.html'>CB - mode of operation</a></li>
+<li><a href='scheme-D.html'>D - general, administration</a></li>
+<li><a href='scheme-DA.html'>DA - general and administration attributes</a></li>
+<li><a href='scheme-E.html'>E - users/beneficiaries</a></li>
+<li><a href='scheme-EA.html'>EA - users or beneficiaries</a></li>
+<li><a href='scheme-F.html'>F - designated use</a></li>
+<li><a href='scheme-FA.html'>FA - educational use</a></li>
+<li><a href='scheme-FB.html'>FB - security use</a></li>
+<li><a href='scheme-FC.html'>FC - waste use</a></li>
+<li><a href='scheme-FD.html'>FD - season use</a></li>
+<li><a href='scheme-FE.html'>FE - postal use</a></li>
+<li><a href='scheme-FF.html'>FF - cleaning use</a></li>
+<li><a href='scheme-FG.html'>FG - other destination use</a></li>
+<li><a href='scheme-G.html'>G - scale and dimension</a></li>
+<li><a href='scheme-GA.html'>GA - dimension and power indication</a></li>
+<li><a href='scheme-GB.html'>GB - frequency</a></li>
+<li><a href='scheme-GC.html'>GC - other indication</a></li>
+<li><a href='scheme-H.html'>H - residual attributes for food, drink and meal</a></li>
+<li><a href='scheme-HA.html'>HA - attributes for food, drink and meal</a></li>
+<li><a href='scheme-I.html'>I - residual attributes for construction/works</a></li>
+<li><a href='scheme-IA.html'>IA - attributes for construction/works</a></li>
+<li><a href='scheme-J.html'>J - residual attributes for computing, information technology or communication</a></li>
+<li><a href='scheme-JA.html'>JA - attributes for computing, information technology or communication</a></li>
+<li><a href='scheme-K.html'>K - residual attributes for energy and water distribution</a></li>
+<li><a href='scheme-KA.html'>KA - attributes for energy and water distribution</a></li>
+<li><a href='scheme-L.html'>L - residual medical and laboratory attributes</a></li>
+<li><a href='scheme-LA.html'>LA - attributes for medical and laboratory</a></li>
+<li><a href='scheme-M.html'>M - residual attributes for transport</a></li>
+<li><a href='scheme-MA.html'>MA - attributes for designated a type of vehicle</a></li>
+<li><a href='scheme-MB.html'>MB - features of vehicle</a></li>
+<li><a href='scheme-MD.html'>MD - attributes for special transport</a></li>
+<li><a href='scheme-ME.html'>ME - attributes for transport special goods</a></li>
+<li><a href='scheme-MF.html'>MF - with using a vehicle</a></li>
+<li><a href='scheme-P.html'>P - renting services</a></li>
+<li><a href='scheme-PA.html'>PA - renting or hire services</a></li>
+<li><a href='scheme-PB.html'>PB - crew, driver or operator services</a></li>
+<li><a href='scheme-Q.html'>Q - residual attributes for advertising and legal advisory services</a></li>
+<li><a href='scheme-QA.html'>QA - advertising services</a></li>
+<li><a href='scheme-QB.html'>QB - legal advisory services</a></li>
+<li><a href='scheme-R.html'>R - residual attributes for research services</a></li>
+<li><a href='scheme-RA.html'>RA - medical research</a></li>
+<li><a href='scheme-RB.html'>RB - economic research services</a></li>
+<li><a href='scheme-RC.html'>RC - technology research</a></li>
+<li><a href='scheme-RD.html'>RD - research fields</a></li>
+<li><a href='scheme-S.html'>S - residual attributes for financial services</a></li>
+<li><a href='scheme-SA.html'>SA - banking services</a></li>
+<li><a href='scheme-SB.html'>SB - insurance services</a></li>
+<li><a href='scheme-SC.html'>SC - pension services</a></li>
+<li><a href='scheme-T.html'>T - residual attributes for printing services</a></li>
+<li><a href='scheme-TA.html'>TA - printing services</a></li>
+<li><a href='scheme-U.html'>U - residual attributes for retail trade services</a></li>
+<li><a href='scheme-UA.html'>UA - retail trade services for food</a></li>
+<li><a href='scheme-UB.html'>UB - retail trade services for non-food</a></li>
+</ul>
+
+<h2>Examples</h2>
+  <h3>Example URIs</h3>
+<p>The URIs are deliberately not defined as part of data.ac.uk as they are a European standard, not just a UK one.</p>
+<dl>
+  <dt>http://purl.org/cpv/2008/code-15555000</dt><dd>- URI for "Ice cream and similar products"</dd>
+  <dt>http://purl.org/cpv/2008/code-35511100-0</dt><dd>- URI with checksum for "Aircraft carriers"</dd>
+  <dt>http://purl.org/cpv/2008/scheme-CPV2008</dt><dd>- URI for the main CPV2008 scheme</dd>
+  <dt>http://purl.org/cpv/2008/scheme-PB</dt><dd>- URI for the supplementary vocabulary "Section P: renting services, Group B: crew, driver or operator services".</dd>
+</dl>
+
+<h3>Example URLs</h3>
+<dl>
+  <dt><a href='http://cpv.data.ac.uk/turtle/code-15555000.ttl'>http://cpv.data.ac.uk/turtle/code-15555000.ttl</a></dt><dd>- URL of Turtle RDF document describing concept "Ice cream and similar products". This won't display in a normal web-browser, so to view it use an RDF browser, eg. <a href='http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fcpv.data.ac.uk%2Fturtle%2Fcode-15555000.ttl'>Graphite Browser</a>.</dd>
+  <dt><a href='http://cpv.data.ac.uk/code-15555000.html'>http://cpv.data.ac.uk/code-15555000.html</a></dt><dd>- HTML page describing concept "Ice cream and similar products".</dd>
+  <dt>http://purl.org/cpv/2008/code-HA23</dt><dd>- URI for the supplemental code "In tomato sauce"</dd>
+  <dt>http://purl.org/cpv/2008/code-HA23-4</dt><dd>- URI with checksum for supplemental code "In tomato sauce"</dd>
+  <dt><a href='http://cpv.data.ac.uk/turtle/code-HA23.ttl'>http://cpv.data.ac.uk/turtle/code-HA23.ttl</a></dt><dd>- URL of Turtle RDF document describing the supplemental concept "In tomato sauce". This won't display in a normal web-browser, so to view it use an RDF browser, eg. <a href='http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fcpv.data.ac.uk%2Fturtle%2Fcode-HA23.ttl'>Graphite Browser</a>.</dd>
+  <dt><a href='http://cpv.data.ac.uk/code-HA23.html'>http://cpv.data.ac.uk/code-HA23.html</a></dt><dd>- HTML page describing concept "In tomato sauce".</dd>
+
+  <dt><a href='http://cpv.data.ac.uk/turtle/scheme-PB.ttl'>http://cpv.data.ac.uk/turtle/scheme-PB.ttl</a></dt><dd>- URL of Turtle RDF document describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services".</dd>
+  <dt><a href='http://cpv.data.ac.uk/tsv/scheme-PB.tsv'>http://cpv.data.ac.uk/tsv/scheme-PB.tsv</a></dt><dd>- URL of Tab-Separated Values document describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services". TSV files will load in Excel, Google Docs and other spreadsheets.</dd>
+  <dt><a href='http://cpv.data.ac.uk/scheme-PB.html'>http://cpv.data.ac.uk/scheme-PB.html</a></dt><dd>- HTML page describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services". </dd>
+
+</dl>
+
+
+ </body>
+</html>
+
