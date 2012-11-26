@@ -21,6 +21,9 @@ my $codes = {};
 my $schemes = {};
 
 my $fh;
+open( $fh, "template.html" ) || die;
+my $HTML_TEMPLATE = join( "",<$fh> );
+close $fh;
 
 $schemes->{CPV2008}->{name} = "CPV 2008";
 $schemes->{CPV2008}->{code} = "CPV2008";
@@ -151,8 +154,8 @@ my @classes = qw/ Division Group Class Category Subcategory /;
 
 # Output Redirect map
 
-open( $fh, ">:utf8", "output/redirects.htaccess" ) || die;
-my $URL_Base_Path = "/~cjg/cpv/RDF/output";
+open( $fh, ">:utf8", "../htdocs/redirects.htaccess" ) || die;
+my $URL_Base_Path = "/";
 foreach my $class ( @classes )
 {
 	print $fh "Redirect $URL_Base_Path/$class $URL_Base_Path/schema.ttl\n";
@@ -172,13 +175,14 @@ close $fh;
 
 # Output URI lookup table (English)
 
-open( $fh, ">:utf8", "output/lookup-en.txt" ) || die;
+open( $fh, ">:utf8", "../htdocs/lookup-en.txt" ) || die;
 foreach my $basecode ( keys %$codes )
 {
 	my $record = $codes->{$basecode};
 	print $fh "".($record->{names}->{EN})."\t$basecode\t".(defined $record->{type}?$record->{type}:"")."\n";
 }
 close $fh;
+
 
 
 
@@ -201,7 +205,7 @@ foreach my $class ( @classes )
 	push @ns, "cpv:$class rdfs:label \"CPV2008 $class\"\@en .";
 	push @ns, "cpv:$class rdfs:comment \"The CPV concept scheme is divided by Division then Group then Class then Category then 3 levels of Subcategory.\"\@en .";
 }
-output( "schema", @ns );
+outputTTL( "schema", @ns );
 
 # create individual records and complete dump
 my @dump = ();
@@ -210,7 +214,10 @@ foreach my $basecode ( keys %$codes )
 	my $record = $codes->{$basecode};
 	my @data = $record->toTurtle;
 	push @dump, @data;
-	output( "code-".$basecode, @data );
+	outputTTL( "code-".$basecode, @data );
+
+	my $html = $record->toHTML;
+	outputHTML( "code-".$basecode, $html );
 }
 
 # create scheme records
@@ -223,20 +230,62 @@ foreach my $scheme_code ( keys %$schemes )
 	{
 		push @data, $item->toTurtle;
 	}
-	output( "scheme-".$scheme_code, @data );
-}
+	outputTTL( "scheme-".$scheme_code, @data );
 
-output( "dump", @dump );
+	my $page = $scheme->toHTML;
+	outputHTML( "scheme-".$scheme_code, $page );
+
+	my $tsv = $scheme->toTSV;
+	outputTSV( "scheme-".$scheme_code, $tsv );
+}
+	
+outputTTL( "dump", @dump );
 
 exit;
 
 ##############################
 
-sub output
+sub outputTSV
+{
+	my( $code, $tsv ) = @_;
+
+	my $file = "../htdocs/tsv/$code.tsv";
+
+	my $fh;
+	open( $fh, ">:utf8", $file ) || die;
+	foreach my $row ( @{ $tsv } )
+	{
+		print $fh join( "\t", @$row )."\n";
+	}
+	close $fh;
+}
+
+##############################
+
+sub outputHTML
+{
+	my( $code, $page ) = @_;
+
+	my $file = "../htdocs/$code.html";
+
+	my $document = $HTML_TEMPLATE;
+	$document =~ s/\$CONTENT/$page->{content}/g;
+	$document =~ s/\$TITLE/$page->{title}/g;
+
+	my $fh;
+	open( $fh, ">:utf8", $file ) || die;
+	print $fh $document;
+	close $fh;
+}
+
+##############################
+
+sub outputTTL
 {
 	my( $code, @data ) = @_;
 
-	my $tmpfile = "../htdocs/$code.tmp.ttl";
+	my $tmpfile = "../htdocs/turtle/$code.tmp.ttl";
+	my $file = "../htdocs/turtle/$code.ttl";
 
 	my $fh;
 	open( $fh, ">:utf8", $tmpfile ) || die;
@@ -246,7 +295,7 @@ sub output
 
 	my $features = " -f 'xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"' -f 'xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"' -f 'xmlns:owl=\"http://www.w3.org/2002/07/owl#\"' ";
 
-	my $cmd = "rapper -q -i turtle $tmpfile | sort -u | rapper -q -i ntriples -I http://purl.org/cpv/2008/ $features - -o turtle > ../htdocs/$code.ttl";
+	my $cmd = "rapper -q -i turtle $tmpfile | sort -u | rapper -q -i ntriples -I http://purl.org/cpv/2008/ $features - -o turtle > $file";
 	`$cmd`;
 	unlink( $tmpfile );
 }
@@ -289,6 +338,62 @@ sub CPV::Code::toTurtle
 	}
 	return @data;
 }
+sub CPV::Code::uri
+{
+	my( $record ) = @_;
+
+	return "http://purl.org/cpv/2008/code-".$record->{basecode};
+}
+sub CPV::Code::toHTML
+{
+	my( $record ) = @_;
+
+	my $page = {};
+	$page->{title} = $record->{names}->{EN};
+	$page->{content} .= "";
+	$page->{content} .= "<div class='metadata'><strong>ID:</strong> ".$record->{basecode}."</div>";
+	$page->{content} .= "<div class='metadata'><strong>ID with checksum:</strong> ".$record->{code}."</div>";
+
+	$page->{content} .= "<div class='metadata'><strong>URI:</strong> ".$record->uri."</div>";
+	$page->{content} .= "<div class='download'><strong>Download:</strong> <a href='turtle/code-".$record->{basecode}.".ttl'>RDF in Turtle</a>.</div>";
+	my @scheme_links = ();
+	foreach my $scheme ( sort @{$record->{scheme}} )
+	{
+		push @scheme_links, "<a href='scheme-$scheme.html'>".$schemes->{$scheme}->{name}."</a>";
+	}
+	$page->{content} .= "<div class='metadata'><strong>Scheme:</strong> ".join( ", ", @scheme_links )."</div>";
+	if( defined $record->{parent} || defined $record->{children} )
+	{
+		my $tree = "<strong>".$record->{basecode}." - ".$record->{names}->{EN}."</strong>";
+		if( defined $record->{children} )
+		{
+			$tree.= "<ul>";
+			foreach my $child_code ( values %{$record->{children}} )
+			{
+				my $child = $codes->{$child_code};
+				$tree .= "<li><a href='code-".$child->{basecode}.".html'>".$child->{code}." - ".$child->{names}->{EN}."</a></li>";
+			}
+			$tree.= "</ul>";
+		}
+		my $current = $record;
+		while( defined $current->{parent} )
+		{
+			$current = $codes->{ $current->{parent} };
+			$tree = "<a href='code-".$current->{basecode}.".html'>".$current->{code}." - ".$current->{names}->{EN}."</a><ul><li>$tree</li></ul>";
+		}
+		
+		$page->{content}.= "<h2>Location in the scheme</h2>";
+		$page->{content}.= "<ul><li>$tree</li></ul>";
+	}
+	$page->{content}.= "<h2>Translations</h2>";
+	$page->{content}.= "<table class='translations'>";
+	foreach my $lang_id ( sort keys %{ $record->{names} } )
+	{
+		$page->{content}.= "<tr><td>$lang_id</td><td>".$record->{names}->{$lang_id}."</td></tr>";
+	}
+	$page->{content}.= "</table>";
+	return $page;
+}
 
 sub CPV::Scheme::toTurtle
 {
@@ -300,6 +405,49 @@ sub CPV::Scheme::toTurtle
 	push @data, "cpv:scheme-".$scheme->{code}." a skos:ConceptScheme .";
 
 	return @data;
+}
+sub CPV::Scheme::uri
+{
+	my( $scheme ) = @_;
+
+	return "http://purl.org/cpv/2008/scheme-".$scheme->{code};
+}
+sub CPV::Scheme::toHTML
+{
+	my( $scheme ) = @_;
+
+	my $page = {};
+	$page->{title} = $scheme->{name};
+	$page->{content} .= "";
+	$page->{content} .= "<div class='metadata'><strong>URI:</strong> ".$scheme->uri."</div>";
+	$page->{content} .= "<div class='download'><strong>Download:</strong> <a href='turtle/scheme-".$scheme->{code}.".ttl'>RDF in Turtle</a>, <a href='tsv/scheme-".$scheme->{code}.".tsv'>Tab-Separated Values (these load in Excel and other spreadsheets)</a>.</div>";
+
+	$page->{content} .= "<table class='scheme'>";
+	foreach my $code ( sort keys %{$scheme->{items}} )
+	{
+		my $item = $scheme->{items}->{$code};
+		$page->{content} .= "<tr>";
+		$page->{content} .= "<td><a href='code-".$item->{basecode}.".html'>".$item->{"code"}."</a></td>";
+		$page->{content} .= "<td>".$item->{"names"}->{EN}."</td>";
+		$page->{content} .= "</tr>";
+	}
+	$page->{content} .= "</table>";
+
+	return $page;
+}
+sub CPV::Scheme::toTSV
+{
+	my( $scheme ) = @_;
+
+	my $tsv = [ ["code","label" ] ];
+
+	foreach my $code ( sort keys %{$scheme->{items}} )
+	{
+		my $item = $scheme->{items}->{$code};
+		push @$tsv, [ $item->{"code"} , $item->{"names"}->{EN} ];
+	}
+
+	return $tsv;
 }
 
 sub turtleEscape
