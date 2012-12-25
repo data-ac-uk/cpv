@@ -1,23 +1,73 @@
 <!DOCTYPE html>
-<html>
- <head>
-  <title>CPV2008 Linked Data</title>
-  <link rel="stylesheet" href="/resources/site.css">
-  <script src='/resources/jquery.min.js' ></script>
- </head>
- <body>
-  <div class='dataacuk_bar'>data.ac.uk</div>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+
+<!-- Basic Page Needs
+  ================================================== -->
+<meta charset="utf-8">
+<title>CPV2008 Linked Data</title>
+<meta name="description" content="CPV.data.ac.uk: EU Common Procurement Codes">
+<meta name="author" content="Christopher Gutteridge">
+
+<!-- Mobile Specific Metas
+  ================================================== -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<!-- CSS
+  ================================================== -->
+<link rel="stylesheet" href="http://data.ac.uk/stylesheets/base.css">
+<link rel="stylesheet" href="http://data.ac.uk/stylesheets/skeleton.css">
+<link rel="stylesheet" href="http://data.ac.uk/stylesheets/layout.css">
+<!--<link rel="stylesheet" href="http://data.ac.uk/stylesheets/site.css">-->
+<link rel="stylesheet" href="/resources/subsite-styles.css">
+<link rel="stylesheet" href="/resources/site.css">
+
+<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+<!-- Favicons
+	================================================== -->
+<link rel="shortcut icon" href="http://data.ac.uk/images/favicon.ico">
+<link rel="apple-touch-icon" href="http://data.ac.uk/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="http://data.ac.uk/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="http://data.ac.uk/images/apple-touch-icon-114x114.png">
+
+</head>
+<body>
+
+<!-- Primary Page Layout
+	================================================== --> 
+
+<!-- Delete everything in this .container and get started on your own site! -->
+
+<div class='dataacuk_bar'>data.ac.uk</div>
+<div class="container">
+  <!--<header class="row" id="header"> <a class="logo" href="/">data.ac.uk</a>-->
+    <nav role="navigation" id="main-menu">
+      <ul class="links inline clearfix">
+        <li class=""><a title="Homepage" href="/">Homepage</a></li>
+        <li class=""><a title="Browse" href="/scheme-CPV2008.html">Browse CPV Codes</a></li>
+      </ul>
+    </nav>
+    <!-- /#navigation --> 
+  </header>
+  <div id="content">
+  <div class="sixteen columns padding_top_30 ">
   <h1>CPV2008 Linked Data</h1>
+  <script src='/resources/jquery.min.js' ></script>
   <p>This site provides Linked Open Data for <a href='http://simap.europa.eu/codes-and-nomenclatures/codes-cpv/codes-cpv_en.htm'>CPV Codes (European Union Common Procurement Vocabulary)</a>. All the data on this site is derived from the XML files on the Simap site.</p>
 <p>These codes provide a rich vocabulary for describing goods and services, from 
-"<a href="code-03221410.html">Cabbages</a>" to "<a href="code-51214000.html">Installation services of parking meter equipment</a>".  This service has the goal of making this easier to use in Linked Open data.</p>
+"<a href="code-03221410.html">Cabbages</a>" to "<a href="code-51214000.html">Installation services of parking meter equipment</a>".  This service has the goal of making it easy to use the Common Procurement Vocabulary in Linked Open data.</p>
 <h2>Quick Search</h2>
 
-    <div class='ui-widget' style='margin:0.3em;text-align:center;clear:both;'>
-      <input id='cpv_input' type='text' style='text-align:left;width:90%;font-size:140%;padding:0.1em;border:solid 1px #000' />
-    </div>
-    <div id='helpstring' style='text-align:center;margin-top:0.3em;font-size:70%'>Enter 3 or more characters to begin search</div>
-</div>
+    <input id='cpv_input' type='text' style='text-align:left;width:95%;font-size:140%;padding:0.1em;border:solid 1px #000' />
+    <div id='helpstring'>Enter 3 or more characters to begin search</div>
 
 <div id="results">
 </div>
@@ -40,35 +90,51 @@ function search_cpv(text) {
         $('#helpstring').hide();
         $.post('search.php', {'term': text}, update_results, 'html');
     }
-    else if (text.length == 0) {
-        clear_results();
-    }
 
     if (text.length < 3) {
         $('#helpstring').show();
+        clear_results();
     }
 }
 
 function update_results( data )
 {
-	$('#results').html( data );
+    $('#results').show();
+    $('#results').html( data );
 }
 
 
 function clear_results() {
+    $('#results').hide();
     $('#results').html('');
 }
 
 </script>
 
+</div>
+  <div class="ten columns ">
 
+<h2>Data</h2>
 
-<h2>Downloads</h2>
-<ul>
-<li><a href='turtle/CPV2008.ttl'>Main CPV 2008 scheme in RDF Turtle</a></li>
-<li><a href='tsv/CPV2008.tsv'>Main CPV 2008 codes in TSV</a></li>
-<li><a href='turtle/dump.ttl'>ALL data in RDF Turtle</a> (includes supplementary code schemes)</li>
-</ul>
+<table>
+
+<tr>
+ <td style='width:40px;'><a href='turtle/scheme-CPV2008.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='turtle/scheme-CPV2008.ttl'>CPV2008</a></strong> - RDF Turtle - 13Mb
+<br />
+(does not include supplementary codes)
+</td>
+</tr>
+<tr>
+ <td><a href='tsv/scheme-CPV2008.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='tsv/scheme-CPV2008.tsv'>CPV2008</a></strong> - Tab-Separated Values - 0.3Mb<br />(load in any spreadsheet software)
+</td>
+<tr>
+ <td><a href='turtle/dump.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='turtle/dump.ttl'>All CPV2008 Data</a></strong> - RDF Turtle - 14Mb<br />
+(includes supplementary code schemes)</td>
+ 
+</table>
   <h2>RDF</h2>
   <p>The schemes are described using <a href='http://www.w3.org/2004/02/skos/'>skos</a>. Individual URIs for codes and schemes resolve to shorter documents (as described below) and a big dump of everything is also available.</p>
   <p>Namespace: <tt>http://purl.org/cpv/2008/</tt></p>
@@ -84,12 +150,42 @@ http://purl.org/cpv/2008/code-15555000-3 and http://purl.org/cpv/2008/code-15555
   <p><tt>http://purl.org/cpv/2008/scheme-<i>&lt;scheme&gt;></i></tt></p>
   <p>The main scheme is <a href='scheme-CPV2008.html'>CPV2008</a> but there are also a number of supplemental schemes which allow qualification of the codes in the main scheme. Some of these supplemental codes are intended for use with a value, such as size or weight, but that is beyond our scope currently.</p>
   <p>Schemes are available as HTML, Turtle and TSV (Spreadsheet) formats. The URI will redirect to the RDF Turtle file.</p>
+
+<h2>Examples</h2>
+  <h3>Example URIs</h3>
+<p>The URIs are deliberately not defined as part of data.ac.uk as they are a European standard, not just a UK one.</p>
+<dl>
+  <dt>http://purl.org/cpv/2008/code-15555000</dt><dd>- URI for "Ice cream and similar products"</dd>
+  <dt>http://purl.org/cpv/2008/code-35511100-0</dt><dd>- URI with checksum for "Aircraft carriers"</dd>
+  <dt>http://purl.org/cpv/2008/scheme-CPV2008</dt><dd>- URI for the main CPV2008 scheme</dd>
+  <dt>http://purl.org/cpv/2008/scheme-PB</dt><dd>- URI for the supplementary vocabulary "Section P: renting services, Group B: crew, driver or operator services".</dd>
+</dl>
+
+<h3>Example URLs</h3>
+<dl>
+  <dt><a href='http://cpv.data.ac.uk/turtle/code-15555000.ttl'>http://cpv.data.ac.uk/turtle/code-15555000.ttl</a></dt><dd>- URL of Turtle RDF document describing concept "Ice cream and similar products". This won't display in a normal web-browser, so to view it use an RDF browser, eg. <a href='http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fcpv.data.ac.uk%2Fturtle%2Fcode-15555000.ttl'>Graphite Browser</a>.</dd>
+  <dt><a href='http://cpv.data.ac.uk/code-15555000.html'>http://cpv.data.ac.uk/code-15555000.html</a></dt><dd>- HTML page describing concept "Ice cream and similar products".</dd>
+  <dt>http://purl.org/cpv/2008/code-HA23</dt><dd>- URI for the supplemental code "In tomato sauce"</dd>
+  <dt>http://purl.org/cpv/2008/code-HA23-4</dt><dd>- URI with checksum for supplemental code "In tomato sauce"</dd>
+  <dt><a href='http://cpv.data.ac.uk/turtle/code-HA23.ttl'>http://cpv.data.ac.uk/turtle/code-HA23.ttl</a></dt><dd>- URL of Turtle RDF document describing the supplemental concept "In tomato sauce". This won't display in a normal web-browser, so to view it use an RDF browser, eg. <a href='http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fcpv.data.ac.uk%2Fturtle%2Fcode-HA23.ttl'>Graphite Browser</a>.</dd>
+  <dt><a href='http://cpv.data.ac.uk/code-HA23.html'>http://cpv.data.ac.uk/code-HA23.html</a></dt><dd>- HTML page describing concept "In tomato sauce".</dd>
+
+  <dt><a href='http://cpv.data.ac.uk/turtle/scheme-PB.ttl'>http://cpv.data.ac.uk/turtle/scheme-PB.ttl</a></dt><dd>- URL of Turtle RDF document describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services".</dd>
+  <dt><a href='http://cpv.data.ac.uk/tsv/scheme-PB.tsv'>http://cpv.data.ac.uk/tsv/scheme-PB.tsv</a></dt><dd>- URL of Tab-Separated Values document describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services". TSV files will load in Excel, Google Docs and other spreadsheets.</dd>
+  <dt><a href='http://cpv.data.ac.uk/scheme-PB.html'>http://cpv.data.ac.uk/scheme-PB.html</a></dt><dd>- HTML page describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services". </dd>
+
+</dl>
+
+
+</div>
+
+  <div class="six columns ">
 <h2>Browse Codes</h2> 
-<ul>
+<ul class='bullets'>
 <li><a href='scheme-CPV2008.html'>CPV Codes 2008</a></li>
 </ul>
 <h3>Supplemental Code Schemes</h3>
-<ul>
+<ul class='bullets'>
 <li><a href='scheme-A.html'>A - materials</a></li>
 <li><a href='scheme-AA.html'>AA - metal and alloy</a></li>
 <li><a href='scheme-AB.html'>AB - non-metal</a></li>
@@ -154,32 +250,11 @@ http://purl.org/cpv/2008/code-15555000-3 and http://purl.org/cpv/2008/code-15555
 <li><a href='scheme-UB.html'>UB - retail trade services for non-food</a></li>
 </ul>
 
-<h2>Examples</h2>
-  <h3>Example URIs</h3>
-<p>The URIs are deliberately not defined as part of data.ac.uk as they are a European standard, not just a UK one.</p>
-<dl>
-  <dt>http://purl.org/cpv/2008/code-15555000</dt><dd>- URI for "Ice cream and similar products"</dd>
-  <dt>http://purl.org/cpv/2008/code-35511100-0</dt><dd>- URI with checksum for "Aircraft carriers"</dd>
-  <dt>http://purl.org/cpv/2008/scheme-CPV2008</dt><dd>- URI for the main CPV2008 scheme</dd>
-  <dt>http://purl.org/cpv/2008/scheme-PB</dt><dd>- URI for the supplementary vocabulary "Section P: renting services, Group B: crew, driver or operator services".</dd>
-</dl>
 
-<h3>Example URLs</h3>
-<dl>
-  <dt><a href='http://cpv.data.ac.uk/turtle/code-15555000.ttl'>http://cpv.data.ac.uk/turtle/code-15555000.ttl</a></dt><dd>- URL of Turtle RDF document describing concept "Ice cream and similar products". This won't display in a normal web-browser, so to view it use an RDF browser, eg. <a href='http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fcpv.data.ac.uk%2Fturtle%2Fcode-15555000.ttl'>Graphite Browser</a>.</dd>
-  <dt><a href='http://cpv.data.ac.uk/code-15555000.html'>http://cpv.data.ac.uk/code-15555000.html</a></dt><dd>- HTML page describing concept "Ice cream and similar products".</dd>
-  <dt>http://purl.org/cpv/2008/code-HA23</dt><dd>- URI for the supplemental code "In tomato sauce"</dd>
-  <dt>http://purl.org/cpv/2008/code-HA23-4</dt><dd>- URI with checksum for supplemental code "In tomato sauce"</dd>
-  <dt><a href='http://cpv.data.ac.uk/turtle/code-HA23.ttl'>http://cpv.data.ac.uk/turtle/code-HA23.ttl</a></dt><dd>- URL of Turtle RDF document describing the supplemental concept "In tomato sauce". This won't display in a normal web-browser, so to view it use an RDF browser, eg. <a href='http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fcpv.data.ac.uk%2Fturtle%2Fcode-HA23.ttl'>Graphite Browser</a>.</dd>
-  <dt><a href='http://cpv.data.ac.uk/code-HA23.html'>http://cpv.data.ac.uk/code-HA23.html</a></dt><dd>- HTML page describing concept "In tomato sauce".</dd>
-
-  <dt><a href='http://cpv.data.ac.uk/turtle/scheme-PB.ttl'>http://cpv.data.ac.uk/turtle/scheme-PB.ttl</a></dt><dd>- URL of Turtle RDF document describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services".</dd>
-  <dt><a href='http://cpv.data.ac.uk/tsv/scheme-PB.tsv'>http://cpv.data.ac.uk/tsv/scheme-PB.tsv</a></dt><dd>- URL of Tab-Separated Values document describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services". TSV files will load in Excel, Google Docs and other spreadsheets.</dd>
-  <dt><a href='http://cpv.data.ac.uk/scheme-PB.html'>http://cpv.data.ac.uk/scheme-PB.html</a></dt><dd>- HTML page describing the supplementary scheme "Section P: renting services, Group B: crew, driver or operator services". </dd>
-
-</dl>
-
-
+</div>
+</div>
+</div>
+<div style='margin-top:20px' class='dataacuk_bar'>data.ac.uk</div>
  </body>
 </html>
 

@@ -16,20 +16,39 @@ table.scheme td, table.translations td {
 	margin-top: 1em;
 	margin-bottom: 1em;
 }
-h1 {
-	color: #666;
-	font-size: 120%;
-	font-family: sans-serif;
-}
 h2 {
-	color: #666;
-	font-size: 110%;
-	font-family: sans-serif;
-	border-bottom: solid 2px #666;
+	margin-top: 1em;
 }
 h3 {
-	color: #666;
-	font-size: 100%;
-	font-family: sans-serif;
+	margin-top: 1em;
+}
+#results {
+	margin-top: 8px;
+	max-height: 400px;
+	overflow: auto;
+	padding: 4px;
+	background-color: #eeeeee;
+	font-size:120%;
+}
+#results td { 
+	padding: 3px;
+}
+dt { 
 	font-weight: bold;
+}
+dd {
+	margin-bottom: 0.5em;
+}
+ul.bullets li { 
+	list-style: inside square;
+}
+ul.bullets ul { 
+	font-size: 100%;
+}
+
+div#content table td {
+	padding: 5px 3px 5px 3px;
+}
+i {
+	font-style: italic;
 }

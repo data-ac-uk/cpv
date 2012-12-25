@@ -159,8 +159,9 @@ print $fh "AddType text/turtle .ttl\n";
 print $fh "AddType application/rdf+xml .rdf\n";
 foreach my $class ( @classes )
 {
-	print $fh "Redirect /$class /turtle/schema.ttl\n";
+	print $fh "Redirect /ns/$class /turtle/schema.ttl\n";
 }
+print $fh "Redirect /ns/ /turtle/schema.ttl\n";
 foreach my $basecode ( keys %$codes )
 {
 	my $record = $codes->{$basecode};
@@ -201,6 +202,7 @@ my $prefixes = "
 \@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 \@prefix owl:  <http://www.w3.org/2002/07/owl#> .
 \@prefix cpv:  <http://purl.org/cpv/2008/> .
+\@prefix cpvns:  <http://purl.org/cpv/2008/ns/> .
 ";
 
 my @ns = ();
@@ -315,7 +317,7 @@ sub CPV::Code::toTurtle
 
 	my @data;
 	push @data, "cpv:code-$basecode a skos:Concept .";
-	if( defined $record->{type} ) { push @data, "cpv:code-$basecode a cpv:".ucfirst( $record->{type} )." ."; }
+	if( defined $record->{type} ) { push @data, "cpv:code-$basecode a cpvns:".ucfirst( $record->{type} )." ."; }
 
 	if( defined $record->{children} ) 
 	{
@@ -360,18 +362,27 @@ sub CPV::Code::toHTML
 	$page->{content} .= "<div class='metadata'><strong>ID with checksum:</strong> ".$record->{code}."</div>";
 
 	$page->{content} .= "<div class='metadata'><strong>URI:</strong> ".$record->uri."</div>";
-	$page->{content} .= "<div class='download'><strong>Download:</strong> <a href='turtle/code-".$record->{basecode}.".ttl'>RDF in Turtle</a>.</div>";
 	my @scheme_links = ();
 	foreach my $scheme ( sort @{$record->{scheme}} )
 	{
 		$page->{content} .= "<div class='metadata'><strong>Scheme:</strong> <a href='scheme-$scheme.html'>".$schemes->{$scheme}->{name}."</a></div>";
 	}
+
+	$page->{content} .= "
+<h2>Data</h2>
+<table>
+
+<tr>
+ <td style='width:40px;'><a href='turtle/code-".$record->{basecode}.".ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='turtle/code-".$record->{basecode}.".ttl'>".$record->{names}->{EN}."</a></strong> - RDF Turtle</td>
+</tr>
+</table>";
 	if( defined $record->{parent} || defined $record->{children} )
 	{
 		my $tree = "<strong>".$record->{code}." - ".$record->{names}->{EN}."</strong>";
 		if( defined $record->{children} )
 		{
-			$tree.= "<ul>";
+			$tree.= "<ul class='bullets'>";
 			foreach my $child_code ( values %{$record->{children}} )
 			{
 				my $child = $codes->{$child_code};
@@ -383,11 +394,11 @@ sub CPV::Code::toHTML
 		while( defined $current->{parent} )
 		{
 			$current = $codes->{ $current->{parent} };
-			$tree = "<a href='code-".$current->{basecode}.".html'>".$current->{code}." - ".$current->{names}->{EN}."</a><ul><li>$tree</li></ul>";
+			$tree = "<a href='code-".$current->{basecode}.".html'>".$current->{code}." - ".$current->{names}->{EN}."</a><ul class='bullets'><li>$tree</li></ul>";
 		}
 		
 		$page->{content}.= "<h2>Location in the scheme</h2>";
-		$page->{content}.= "<ul><li>$tree</li></ul>";
+		$page->{content}.= "<ul class='bullets'><li>$tree</li></ul>";
 	}
 	$page->{content}.= "<h2>Translations</h2>";
 	$page->{content}.= "<table class='translations'>";
@@ -424,7 +435,19 @@ sub CPV::Scheme::toHTML
 	$page->{title} = $scheme->{name};
 	$page->{content} .= "";
 	$page->{content} .= "<div class='metadata'><strong>URI:</strong> ".$scheme->uri."</div>";
-	$page->{content} .= "<div class='download'><strong>Download:</strong> <a href='turtle/scheme-".$scheme->{code}.".ttl'>RDF in Turtle</a>, <a href='tsv/scheme-".$scheme->{code}.".tsv'>Tab-Separated Values (these load in Excel and other spreadsheets)</a>.</div>";
+	$page->{content} .= "
+<table>
+
+<tr>
+ <td style='width:40px;'><a href='turtle/scheme-".$scheme->{code}.".ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='turtle/scheme-".$scheme->{code}.".ttl'>".$scheme->{name}."</a></strong> - RDF Turtle</td>
+</tr>
+<tr>
+ <td style='width:40px;'><a href='tsv/scheme-".$scheme->{code}.".tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='tsv/scheme-".$scheme->{code}.".tsv'>".$scheme->{name}."</a></strong> - Tab Seperated Values<br />(load in any spreadsheet software)</td>
+</tr>
+</table>
+";
 
 	$page->{content} .= "<table class='scheme'>";
 	foreach my $code ( sort keys %{$scheme->{items}} )
