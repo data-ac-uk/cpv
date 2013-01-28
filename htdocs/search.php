@@ -14,10 +14,10 @@ foreach( $lines as $line )
 {
 	$line = chop( $line );
 	list( $name,$code,$type) = preg_split( '/\t/', $line );
-	
+		
 	foreach( $terms as $term )
 	{
-		if( !preg_match( '/\b'.$term.'/i', $name ) ) { continue 2; }
+		if( !preg_match( '/\b'.$term.'/i', $name." ".$code ) ) { continue 2; }
 	}
 	$results []= "<tr><td><a href='/code-$code.html'>$code</a></td><td>$name</td><td>($type)</td></tr>";
 }
