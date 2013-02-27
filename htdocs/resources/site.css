@@ -1,8 +1,9 @@
-
-.dataacuk_bar {
-	background-color: #000;
-	color: #fff;
-	padding: 3px;
+h1 { padding-right: 300px; }
+table.scheme {
+	margin-top: 2em;
+}
+.metadata {
+	margin-bottom: 1em;
 }
 table.scheme, table.translations {
 	border-collapse: collapse;

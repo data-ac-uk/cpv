@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use Data::Dumper;
 
-chdir($FindBin::Bin);
+chdir($FindBin::Bin."/..");
 binmode( STDOUT, ":utf8" );
 
 # this script processes the CPV data into RDF documents
@@ -19,15 +19,11 @@ binmode( STDOUT, ":utf8" );
 
 my $codes = {};
 my $schemes = {};
-
 my $fh;
-open( $fh, "template.html" ) || die;
-my $HTML_TEMPLATE = join( "",<$fh> );
-close $fh;
 
 $schemes->{CPV2008}->{name} = "CPV 2008";
 $schemes->{CPV2008}->{code} = "CPV2008";
-open( $fh, "sections.txt" ) || die;
+open( $fh, "etc/sections.txt" ) || die "Failed to open etc/sections: $!";
 my $levl1 = "";
 while( my $line = readline( $fh ) )
 {
@@ -53,7 +49,7 @@ foreach my $scheme ( values %{$schemes} )
 	bless $scheme, "CPV::Scheme";
 }
 
-open( $fh, "-|:utf8", "xsltproc xml2table.xsl cpv_2008.xml" ) || die;
+open( $fh, "-|:utf8", "xsltproc etc/xml2table.xsl etc/cpv_2008.xml" ) || die;
 while( my $line = readline($fh) )
 {
 	chomp $line;
@@ -122,7 +118,7 @@ foreach my $code ( keys %$codes )
 	$codes->{$record->{parent}}->{children}->{$code} = $code;
 }
 
-open( $fh, "-|:utf8", "xsltproc xml2table.xsl code_cpv_suppl_2008.xml" ) || die;
+open( $fh, "-|:utf8", "xsltproc etc/xml2table.xsl etc/code_cpv_suppl_2008.xml" ) || die;
 while( my $line = readline($fh) )
 {
 	next if $line =~ m/^\s*$/;
@@ -154,7 +150,7 @@ my @classes = qw/ Division Group Class Category Subcategory /;
 
 # Output Redirect map
 
-open( $fh, ">:utf8", "../htdocs/.htaccess" ) || die;
+open( $fh, ">:utf8", "htdocs/.htaccess" ) || die;
 print $fh "AddType text/turtle .ttl\n";
 print $fh "AddType application/rdf+xml .rdf\n";
 foreach my $class ( @classes )
@@ -166,12 +162,6 @@ foreach my $basecode ( keys %$codes )
 {
 	my $record = $codes->{$basecode};
 	my $code = $record->{code};
-	print $fh "Redirect /code-$basecode /turtle/code-$basecode.ttl\n";
-	print $fh "Redirect /code-$code /turtle/code-$basecode.ttl\n";
-}
-foreach my $scheme_code ( keys %$schemes )
-{
-	print $fh "Redirect /scheme-$scheme_code /turtle/scheme-$scheme_code.ttl\n";
 }
 close $fh;
 
@@ -183,7 +173,7 @@ foreach my $basecode ( keys %$codes )
 	my $record = $codes->{$basecode};
 	$rows{$record->{names}->{EN}} = "".($record->{names}->{EN})."\t$basecode\t".(defined $record->{type}?$record->{type}:"suppliemental code")."\n";
 }
-open( $fh, ">:utf8", "../htdocs/lookup-en.txt" ) || die;
+open( $fh, ">:utf8", "htdocs/lookup-en.txt" ) || die "Failed to write lookup-en.txt: $!";
 foreach my $name ( sort keys %rows )
 {
 	print $fh $rows{$name};
@@ -256,7 +246,7 @@ sub outputTSV
 {
 	my( $code, $tsv ) = @_;
 
-	my $file = "../htdocs/tsv/$code.tsv";
+	my $file = "htdocs/tsv/$code.tsv";
 
 	my $fh;
 	open( $fh, ">:utf8", $file ) || die;
@@ -273,15 +263,17 @@ sub outputHTML
 {
 	my( $code, $page ) = @_;
 
-	my $file = "../htdocs/$code.html";
-
-	my $document = $HTML_TEMPLATE;
-	$document =~ s/\$CONTENT/$page->{content}/g;
-	$document =~ s/\$TITLE/$page->{title}/g;
-
 	my $fh;
-	open( $fh, ">:utf8", $file ) || die;
-	print $fh $document;
+	my $file;
+
+	$file = "htdocs/ui/var/$code.html";
+	open( $fh, ">:utf8", $file ) || die "died writing $file: $!";
+	print $fh $page->{content};
+	close $fh;
+
+	$file = "htdocs/ui/var/$code.title";
+	open( $fh, ">:utf8", $file ) || die "died writing $file: $!";
+	print $fh $page->{title};
 	close $fh;
 }
 
@@ -291,8 +283,8 @@ sub outputTTL
 {
 	my( $code, @data ) = @_;
 
-	my $tmpfile = "../htdocs/turtle/$code.tmp.ttl";
-	my $file = "../htdocs/turtle/$code.ttl";
+	my $tmpfile = "htdocs/turtle/$code.tmp.ttl";
+	my $file = "htdocs/turtle/$code.ttl";
 
 	my $fh;
 	open( $fh, ">:utf8", $tmpfile ) || die;

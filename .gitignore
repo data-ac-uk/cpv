@@ -1,4 +1,5 @@
-htdocs/code-*.html
-htdocs/scheme-*.html
 htdocs/turtle
 htdocs/tsv
+htdocs/ui/var
+htdocs/tmp
+htdocs/old
