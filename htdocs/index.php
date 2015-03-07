@@ -30,18 +30,32 @@ $f3->route('GET /',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+$f3->route('GET /@path' , 
+	function() use($f3) {
+	        $path = $f3->get('PARAMS.path');
+		if( preg_match( "/\.html$/", $path ) )
+		{
+			$path = preg_replace( '/\.html$/','',$path );
+			$f3->set('title', "var/$path.title" );
+			$f3->set('content',"var/$path.html");
+			print Template::instance()->render( "page-template.html" );
+			return;
+		}
+		elseif( preg_match( "/^(code|scheme)-[A-Z0-9]+$/", $path ) )
+		{
+			header( "Location: http://cpv.data.ac.uk/turtle/$path.ttl" );
+		}
+		else
+		{
+			$f3->error(404);
+		}
+		
+	});
 $f3->route('GET /ns/*', 
 	function() {
 		header( "Location: http://cpv.data.ac.uk/turtle/schema.ttl" );
 		exit;
 	} );
-$f3->route('GET /@path.html' , 
-	function() use($f3) {
-	        $path = $f3->get('PARAMS.path');
-		$f3->set('title', "var/$path.title" );
-		$f3->set('content',"var/$path.html");
-		print Template::instance()->render( "page-template.html" );
-	});
 $f3->run();
 
 exit;
