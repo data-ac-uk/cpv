@@ -43,6 +43,7 @@ $f3->route('GET /@path' ,
 		}
 		elseif( preg_match( "/^(code|scheme)-[A-Z0-9]+$/", $path ) )
 		{
+			header("HTTP/1.1 303 See Other");
 			$wants = wants($f3); // do they like ttl or html?
 			if( $wants == "ttl" )
 			{
@@ -61,6 +62,7 @@ $f3->route('GET /@path' ,
 	});
 $f3->route('GET /ns/*', 
 	function() {
+		header("HTTP/1.1 303 See Other");
 		header( "Location: http://cpv.data.ac.uk/turtle/schema.ttl" );
 		exit;
 	} );
